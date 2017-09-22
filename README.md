@@ -71,6 +71,7 @@ Three primary method dispatch mechanisms in complied programming language:
 <img src="https://www.raizlabs.com/dev/wp-content/uploads/sites/10/2016/12/message-dispatch.png" hspace="10" vspace="6">
 <br/>
 
-    Note: lookup is guarded by a fast cache layer that makes lookups almost as fast as table dispatch once the cache is warmed up.
+
+Note: lookup is guarded by a fast cache layer that makes lookups almost as fast as table dispatch once the cache is warmed up.
     
     
