@@ -1,10 +1,3 @@
----
-layout: post
-title: iOS - Method-Dispatch-in-Swift
-category: iOS
-tags: [iOS, Swift]
----
-
 # Method Dispatch in Swift (note)
 
 Learned from blog: https://www.raizlabs.com/dev/2016/12/swift-method-dispatch/  
