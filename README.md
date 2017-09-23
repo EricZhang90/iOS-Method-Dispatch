@@ -109,7 +109,7 @@ Three primary method dispatch mechanisms in complied programming language:
     myPro.extensionMethod() // -> “Extension In Protocol”
   ```
   
-  ###### Why calling `myPro.extensionMethod()` results in the output `“Extension In Protocol”`? Because, firstly, according to the location table above, this calling uses direct dispath(in onther word, there is not 'override' behaviour), second, type of `myPro` is `MyProtocal`, only methods is visible to the protocal is used to use to direct dispatch.
+  ###### Why calling `myPro.extensionMethod()` results in the output `“Extension In Protocol”`? Because, firstly, according to the location table above, this calling uses direct dispath(in other word, there is not 'override' behaviour), second, type of `myPro` is `MyProtocal`, only methods is visible to the protocal is used to use to direct dispatch.
   
   Let's see another example:
   ```Swift
