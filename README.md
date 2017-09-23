@@ -1,6 +1,6 @@
 # Method Dispatch in Swift (note)
 
-Learned from blog: https://www.raizlabs.com/dev/2016/12/swift-method-dispatch/  
+##### Learned from blog: https://www.raizlabs.com/dev/2016/12/swift-method-dispatch/  
 
 ## In gerenal:
 Q: What is method dispatch in computer science?  
@@ -18,13 +18,13 @@ Three primary method dispatch mechanisms in complied programming language:
   * The class has an array (function table) of function pointers for each method. The subclass has own copy of function table. There are the rules for creating the subclass’s function table:
     1. If the method is extended from super class, simply copy the address of the method to the subclass’s function table.
     2. If the method is overrided, add the new method’s address to the subclass’s function table.
-    3. If the method is newly created in subclass, append the method’s address to the end of in the function table.
+    3. If the method is created in subclass, append the method’s address to the end of in the function table.
 
     Example:  
     
 ```Swift    
   class ParentClass {  
-      func method1() {
+      func method1() {}
       func method2() {}
   }
   class ChildClass: ParentClass {
@@ -38,9 +38,9 @@ Three primary method dispatch mechanisms in complied programming language:
 
     What happen in runtime is:
     
-      1. Read the dispatch table for the object 0xB00  
-      2. Read the function pointer at the index for the method. In this case, the method index for function2 is 1, so the address 0xB00 + 1 is read.
-      3. Jump to the address 0x222  
+      1. Read the dispatch table for the object 0xB00  
+      2. Read the function pointer at the index for the method. In this case, the method index for function2 is 1, so the address 0xB00 + 1 is read.
+      3. Jump to the address 0x222  
       
   * Advantage: Logic is simple; Performance is predictable
   * Disadvantage: 
@@ -64,7 +64,80 @@ Three primary method dispatch mechanisms in complied programming language:
 <img src="https://www.raizlabs.com/dev/wp-content/uploads/sites/10/2016/12/message-dispatch.png" hspace="10" vspace="6">
 <br/>
 
+  * Note: lookup is guarded by a fast cache layer that makes lookups almost as fast as table dispatch once the cache is warmed up.
+    
+    
 
-Note: lookup is guarded by a fast cache layer that makes lookups almost as fast as table dispatch once the cache is warmed up.
+## Method Dispatch in Swift
+#### Four aspects that guide how dispatch is selected in Swift: Declaration Location, Reference Type, Specified Behavior and Visibility Optimizations
+
+* Location: 
+
+|                  | Declared in Class| Declared in Extension |
+| ---------------  |:----------------:| :--------------------:|
+| Property         | Direct Dispatch  | Direct dispatch       |
+| Protocal         | Table Dispatch   | Direct dispatch       |
+| Class            | Table Dispatc    | Direct dispatch       |
+| NSObject subclass| Table Dispatc    | Table Dispatc         |
+
+
+<br/><br/>
+* Reference Type:  
+  * Type of reference also determines how to dispatch methods. 
+  * Example: 
+  ```Swift
+    protocol MyProtocol {}
     
+    extension MyProtocol {
+      func extensionMethod() {
+        print("Extension In Protocol")
+      }
+    }
     
+    struct MyStruct: MyProtocol {}
+    
+    extension MyStruct {
+      func extensionMethod() {
+        print("Extension In Struct")
+      }
+    }
+ 
+    let myStruct = MyStruct()
+    let myPro: MyProtocol = myStruct
+    
+    myStruct.extensionMethod() // -> “Extension In Struct”
+    myPro.extensionMethod() // -> “Extension In Protocol”
+  ```
+  
+  ###### Why calling `myPro.extensionMethod()` results in the output `“Extension In Protocol”`? Because, firstly, according to the location table above, this calling uses direct dispath(in onther word, there is not 'override' behaviour), second, type of `myPro` is `MyProtocal`, only methods is visible to the protocal is used to use to direct dispatch.
+  
+  Let's see another example:
+  ```Swift
+  protocol MyProtocol {
+  
+    func mainMethod(){}
+  }
+  
+  extension MyProtocol {
+  
+    func mainMethod() {
+      print("main method in Protocal")
+    }
+  }
+  
+  struct MyStruct: MyProtocol {
+    func mainMethod() {
+      print("main method in Structure")
+    }
+  }
+  
+  let myStruct = MyStruct()
+  let myPro: MyProtocol = myStruct
+  
+  myStruct.mainMethod() // -> "main method in Structure" 
+  proto.mainMethod() // -> "main method in Structure" 
+
+  ```
+  ###### Why calling `proto.mainMethod()` results in same output `"main method in Structure"`? Because, according to location table above, this calling uses table dispatch, therefore, 'override' occured, the method `mainMethod()` in `MyProtocal` is overrided by the one in `MyStruct`.
+
+
